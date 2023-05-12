@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IA</title>
+
+    <!-- TensorFlow.js -->
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@1.0.1"> </script>
+    <!-- Modelo de IA treinado com diversas imagens -->
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/mobilenet@1.0.0"> </script>
+</head>
+<body>
+    
+    <!-- Replace this with your image. Make sure CORS settings allow reading the image! -->
+    <input type="file" name="edtImagem" id="edtImagem">
+    <br>
+    <img id="img"></img>
+    <br>
+    RESULTADOS: <p class="resultado"></p>   
+
+</body>
+</html>
+
+<!-- Place your code in the script tag below. You can also use an external .js file -->
+<script>
+    // img
+    let imgPreview = document.querySelector('#img')
+
+    // resultado 
+    let resultado = document.querySelector('.resultado')
+
+    // edtImagem
+    let edtImagem = document.querySelector('#edtImagem')
+    edtImagem.addEventListener("change", function(e) {
+        resultado.innerHTML = ""
+
+        // Criar objeto FileReader
+        const leitor = new FileReader();
+        // Definir função a ser executada quando a leitura do arquivo estiver concluída
+        leitor.onload = function(e) {
+            // Definir o atributo src da tag img como o conteúdo do arquivo lido
+            imgPreview.setAttribute('src', e.target.result);
+        }
+        // Ler o arquivo de imagem como uma URL de dados
+        leitor.readAsDataURL(edtImagem.files[0]);
+
+        // Carrega biblioteca mobilenet
+        mobilenet.load().then(model => {
+                // Classificando a imagem
+                model.classify(imgPreview).then(predictions => {
+                    console.log('Predictions: ');
+                    console.log(predictions);
+
+                    predictions.forEach(element => {
+                        resultado.innerHTML += `${element.className} (${element.probability}) <BR>`
+                    });
+                });
+        });        
+    })    
+</script>
